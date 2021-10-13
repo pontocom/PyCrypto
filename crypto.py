@@ -2,6 +2,7 @@ import hashes as h
 import sk_encryption as sk
 import mac as m
 import pk_encryption as pk
+import digital_signature as ds
 
 
 def print_menu():
@@ -39,7 +40,7 @@ def compute_pk_encryption():
 
 
 def compute_digital_signature():
-    print("\nNot implemented!")
+    ds.do_digital_signature_stuff()
     return
 
 
@@ -48,7 +49,7 @@ def compute_x509_certificates():
     return
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     while True:
         print_menu()
         option = input("Enter option -> ")

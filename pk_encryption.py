@@ -1,3 +1,5 @@
+import base64
+
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives import hashes
@@ -32,7 +34,7 @@ def cipher_with_public_key(message, pubkey):
     print("\nCiphering with the public key...")
 
     ciphertext = pubkey.encrypt(message, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-    print("Ciphertext = " + str(ciphertext))
+    print("Ciphertext = " + str(base64.b64encode(ciphertext)))
     return ciphertext
 
 
