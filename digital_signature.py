@@ -1,11 +1,11 @@
 import base64
-
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
-from cryptography.hazmat.primitives import serialization
+from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import hashes
 import pk_encryption as pk
 
 
+# Sign a message with a private key
 def sign_with_private_key(privkey, message):
     print("\nSigning message with the private key...")
     signature = privkey.sign(message, padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH), hashes.SHA256())
@@ -13,6 +13,7 @@ def sign_with_private_key(privkey, message):
     return signature
 
 
+# Verify a signed message and check for the signature validity
 def verify_with_public_key(pubkey, message, signature):
     print("\nVerifying message with the public key...")
     try:
@@ -22,6 +23,7 @@ def verify_with_public_key(pubkey, message, signature):
         print("Signature is INVALID!")
 
 
+# Execute all the different digital signatures stuff
 def do_digital_signature_stuff():
     privkey = pk.create_key_pair(4096)
 
