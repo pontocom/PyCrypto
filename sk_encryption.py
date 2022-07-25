@@ -2,6 +2,7 @@ import base64
 import os
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
@@ -52,11 +53,16 @@ def do_encrypt_with_sk(message):
 def do_aes(message, mode, key, iv=None, nonce=None):
     print("\nEncrypting with AES, 256-bit key, mode " + mode)
 
+    print("Data:" + str(message))
+
     # AES works on blocks of 128bits (32 bytes) so we need to make user the message is multiple of the block lenght
     if len(message) % 16 != 0:
-        print("Message to cipher is too short... for AES it needs to be multiple of 16 in size (so, 16, 32, 48, 64, etc.)")
-        input_message = input("Message to cipher: ")
-        message = input_message.encode('ascii')
+        # handling the padding of the messages
+        padder = padding.PKCS7(128).padder()
+        paddeddata = padder.update(message)
+        paddeddata += padder.finalize()
+        print("Data (padded):" +  str(paddeddata))
+        message = paddeddata
 
     print("KEY = " + str(base64.b64encode(key)))
     if mode == 'ECB':
@@ -75,7 +81,12 @@ def do_aes(message, mode, key, iv=None, nonce=None):
     decryptor = cipher.decryptor()
     plaintext = decryptor.update(ciphertext) + decryptor.finalize()
     print("Ciphertext = " + str(base64.b64encode(ciphertext)))
-    print("Plaintext = " + str(plaintext))
+
+    unpadder = padding.PKCS7(128).unpadder()
+    data = unpadder.update(plaintext)
+    plaintext_data = data + unpadder.finalize()
+
+    print("Plaintext = " + str(plaintext_data))
 
 
 # Encrypt with ChaCha20
@@ -94,12 +105,16 @@ def do_chacha20(message, key, nonce):
 # Encrypt with Camellia
 def do_camellia(message, key, iv):
     print("\nEncrypting with Camellia")
+    print("Data:" + str(message))
+
     # Camellia works on blocks of 128bits (32 bytes) so we need to make user the message is multiple of the block lenght
     if len(message) % 16 != 0:
-        print(
-            "Message to cipher is too short... for Camellia it needs to be multiple of 16 in size (so, 16, 32, 48, 64, etc.)")
-        input_message = input("Message to cipher: ")
-        message = input_message.encode('ascii')
+        # handling the padding of the messages
+        padder = padding.PKCS7(128).padder()
+        paddeddata = padder.update(message)
+        paddeddata += padder.finalize()
+        print("Data (padded):" +  str(paddeddata))
+        message = paddeddata
 
     cipher = Cipher(algorithms.Camellia(key), modes.CBC(iv))
     encryptor = cipher.encryptor()
@@ -108,4 +123,10 @@ def do_camellia(message, key, iv):
     plaintext = decryptor.update(ciphertext)
     print("KEY = " + str(base64.b64encode(key)))
     print("Ciphertext = " + str(base64.b64encode(ciphertext)))
-    print("Plaintext = " + str(plaintext))
+
+    unpadder = padding.PKCS7(128).unpadder()
+    data = unpadder.update(plaintext)
+    plaintext_data = data + unpadder.finalize()
+
+    print("Plaintext = " + str(plaintext_data))
+
