@@ -12,26 +12,26 @@ def print_x509_menu():
     print("|     X.509 M e n u     |")
     print("-------------------------")
     print("[1] Create Key Pair")
-    print("[2] Create CSR")
-    print("[3] Create Self Signed Certificate")
+    print("[2] Create Self Signed Certificate")
+    print("[3] Create CSR")
     print("[0] Exit")
 
 
-def create_key_pair():
+def create_key_pair(filename):
     input_keysize = input("Enter the keysize: ")
     input_password = input("Enter the password to protect the private key: ")
     print("Creating a key pair... this may take some time...")
 
     key = rsa.generate_private_key(public_exponent=65537, key_size=int(input_keysize))
-    with open("key.pem", "wb") as f:
+    with open(filename, "wb") as f:
         f.write(key.private_bytes(encoding=serialization.Encoding.PEM,
                                   format=serialization.PrivateFormat.TraditionalOpenSSL,
                                   encryption_algorithm=serialization.BestAvailableEncryption(input_password.encode('ascii')),))
 
 
-def read_key_pair():
+def read_key_pair(filename):
     input_password = input("Enter the password to access the private key: ")
-    with open("key.pem", "rb") as f:
+    with open(filename, "rb") as f:
         private_key = serialization.load_pem_private_key(f.read(), password=input_password.encode('ascii'))
 
     return private_key
@@ -43,13 +43,14 @@ def do_x509_stuff():
         option = input("Enter option -> ")
 
         if option == '1':
-            create_key_pair()
+            create_key_pair("ca.key")
         elif option == '2':
-            privkey = read_key_pair()
-            create_CSR(privkey)
-        elif option == '3':
-            privkey = read_key_pair()
+            privkey = read_key_pair("ca.key")
             create_self_signed_certificate(privkey)
+        elif option == '3':
+            create_key_pair("user.key")
+            privkey = read_key_pair("user.key")
+            create_CSR(privkey)
         elif option == '0':
             break
         else:
@@ -81,7 +82,7 @@ def create_CSR(key):
     # Sign the CSR with our private key
     ).sign(key, hashes.SHA256())
     # write the CSR to disk
-    with open("csr.pem", "wb") as f:
+    with open("user.pem", "wb") as f:
         f.write(csr.public_bytes(serialization.Encoding.PEM))
 
 
@@ -116,10 +117,11 @@ def create_self_signed_certificate(key):
         # 10 years in duration
         datetime.datetime.utcnow() + datetime.timedelta(days=3650)
     ).add_extension(
-        x509.SubjectAlternativeName([
-            x509.DNSName("localhost")
-        ]),
-        critical=False
+        x509.BasicConstraints(ca=True, path_length=None),
+        critical=True
+    ).add_extension(
+        x509.KeyUsage(digital_signature=True, key_encipherment=True, key_cert_sign=True, crl_sign=True, content_commitment=False, data_encipherment=False, key_agreement=False, encipher_only=False, decipher_only=False),
+        critical=True
     # Sign the certificate
     ).sign(key, hashes.SHA256())
     # write certificate to disk
