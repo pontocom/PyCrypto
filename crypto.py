@@ -3,6 +3,7 @@ import sk_encryption as sk
 import mac as m
 import pk_encryption as pk
 import digital_signature as ds
+import x509 as x
 
 
 def print_menu():
@@ -45,7 +46,7 @@ def compute_digital_signature():
 
 
 def compute_x509_certificates():
-    print("\nNot implemented!")
+    x.do_x509_stuff()
     return
 
 
