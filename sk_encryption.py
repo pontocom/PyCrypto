@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 def do_encryption_stuff():
     input_message = input("Message to cipher: ")
-    message = input_message.encode('ascii')
+    message = input_message.encode('utf8')
     do_encrypt_with_passphrase(message)
     do_encrypt_with_sk(message)
 
@@ -18,7 +18,7 @@ def do_encrypt_with_passphrase(message):
     print("\nEncrypting with a passphrase (derived to a 256-bit secret key using PBKDF2)")
     input_passphrase = input("Enter a passphrase: ")
 
-    passphrase = input_passphrase.encode('ascii')
+    passphrase = input_passphrase.encode('utf8')
 
     salt = os.urandom(16)
     kdf = PBKDF2HMAC(
@@ -33,7 +33,7 @@ def do_encrypt_with_passphrase(message):
     ciphertext = f.encrypt(message)
     plaintext = f.decrypt(ciphertext)
     print("Ciphertext = " + str(ciphertext))
-    print("Plaintext = " + str(plaintext))
+    print("Plaintext = " + str(plaintext.decode('utf-8')))
 
 
 def do_encrypt_with_sk(message):
@@ -58,7 +58,7 @@ def do_aes(message, mode, key, iv=None, nonce=None):
     # AES works on blocks of 128bits (32 bytes) so we need to make user the message is multiple of the block lenght
     if len(message) % 16 != 0:
         # handling the padding of the messages
-        padder = padding.PKCS7(128).padder()
+        padder = padding.PKCS7(algorithms.AES.block_size).padder()
         paddeddata = padder.update(message)
         paddeddata += padder.finalize()
         print("Data (padded):" +  str(paddeddata))
@@ -82,11 +82,11 @@ def do_aes(message, mode, key, iv=None, nonce=None):
     plaintext = decryptor.update(ciphertext) + decryptor.finalize()
     print("Ciphertext = " + str(base64.b64encode(ciphertext)))
 
-    unpadder = padding.PKCS7(128).unpadder()
+    unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()
     data = unpadder.update(plaintext)
     plaintext_data = data + unpadder.finalize()
 
-    print("Plaintext = " + str(plaintext_data))
+    print("Plaintext = " + str(plaintext_data.decode('utf-8')))
 
 
 # Encrypt with ChaCha20
@@ -99,7 +99,7 @@ def do_chacha20(message, key, nonce):
     plaintext = decryptor.update(ciphertext)
     print("KEY = " + str(base64.b64encode(key)))
     print("Ciphertext = " + str(base64.b64encode(ciphertext)))
-    print("Plaintext = " + str(plaintext))
+    print("Plaintext = " + str(plaintext.decode('utf-8')))
 
 
 # Encrypt with Camellia
@@ -110,7 +110,7 @@ def do_camellia(message, key, iv):
     # Camellia works on blocks of 128bits (32 bytes) so we need to make user the message is multiple of the block lenght
     if len(message) % 16 != 0:
         # handling the padding of the messages
-        padder = padding.PKCS7(128).padder()
+        padder = padding.PKCS7(algorithms.Camellia.block_size).padder()
         paddeddata = padder.update(message)
         paddeddata += padder.finalize()
         print("Data (padded):" +  str(paddeddata))
@@ -124,9 +124,9 @@ def do_camellia(message, key, iv):
     print("KEY = " + str(base64.b64encode(key)))
     print("Ciphertext = " + str(base64.b64encode(ciphertext)))
 
-    unpadder = padding.PKCS7(128).unpadder()
+    unpadder = padding.PKCS7(algorithms.Camellia.block_size).unpadder()
     data = unpadder.update(plaintext)
     plaintext_data = data + unpadder.finalize()
 
-    print("Plaintext = " + str(plaintext_data))
+    print("Plaintext = " + str(plaintext_data.decode('utf-8')))
 
