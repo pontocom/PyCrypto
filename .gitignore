@@ -1,3 +1,15 @@
 /Pipfile
 /Pipfile.lock
 /venv/
+ca.key
+.gitignore
+root_certificate.pem
+user.crt
+user.csr
+user.key
+__pycache__/x509.cpython-39.pyc
+__pycache__/sk_encryption.cpython-39.pyc
+__pycache__/pk_encryption.cpython-39.pyc
+__pycache__/mac.cpython-39.pyc
+__pycache__/hashes.cpython-39.pyc
+__pycache__/digital_signature.cpython-39.pyc
