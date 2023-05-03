@@ -11,10 +11,10 @@ def print_x509_menu():
     print("-------------------------")
     print("|     X.509 M e n u     |")
     print("-------------------------")
-    print("[1] Create Key Pair")
-    print("[2] Create Self Signed Certificate")
-    print("[3] Create CSR")
-    print("[4] Load CSR and Issue Certificate")
+    print("[1] Create Key Pair: Setup the CA and create the keypait")
+    print("[2] Create Self Signed Certificate: Issue a self-signed certificate for the CA")
+    print("[3] Create CSR: Normal user asking for a certificate to the CA")
+    print("[4] Load CSR and Issue Certificate: CA receives and loads the CSR and issues certificates")
     print("[0] Exit")
 
 
