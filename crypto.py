@@ -10,12 +10,13 @@ def print_menu():
     print("-------------------")
     print("|     M e n u     |")
     print("-------------------")
+    print("Implements diverse cryptography operations that might be useful in different situations")
     print("[1] Compute Hash")
     print("[2] Secret-key encryption")
     print("[3] Compute Message Authentication Code")
     print("[4] Public-key encryption")
     print("[5] Digital signatures")
-    print("[6] X.509 certificates")
+    print("[6] X.509 certificates (implements a CA and X.509 certificates creation)")
     print("[0] Exit")
 
 
