@@ -15,3 +15,4 @@ __pycache__/hashes.cpython-39.pyc
 __pycache__/digital_signature.cpython-39.pyc
 __pycache__/hashes.cpython-310.pyc
 .DS_Store
+PyCrypto.code-workspace
